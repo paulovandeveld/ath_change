@@ -1,0 +1,4 @@
+src/configs/credentials.py
+
+*.pyc
+__pycache__/

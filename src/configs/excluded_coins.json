@@ -1,0 +1,11 @@
+{
+    "manual_exclude": ["ousg", "usyc", "$rcge", "gho", "paxg", "qgold", "dai", "usr"],
+    "stable_keywords": ["usd"],
+    "wrapped_keywords": ["btc", "eth", "sol", "apt", "The Dogeson", "Based Pepe"],
+	"current_ath" : ["leo", "ftn", "virtual", "tkx", "ai16z", "spx"],
+	"current_ath_lowcap" : ["fmc", "snai", "cookie", "fomo", "spore", "odos", "order"],
+	"symbol_corrections": {
+        "ai-rig-complex": "arcsol"
+    },
+	"update_at" : "01/01/2024 21:00"
+}

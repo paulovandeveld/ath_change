@@ -1,0 +1,15 @@
+# Project structure for monitoring and trading based on ATH proximity
+
+## Directory structure
+# /src
+#     - main.py: Entry point of the application.
+#     - services/
+#         - api_coingecko.py: Contains functions to interact with the CoinGecko API.
+#         - api_mexc.py: Handles interaction with the MEXC exchange API, including market checks and order placement.
+#         - utils.py: Utility functions for calculations, formatting, and other repetitive tasks.
+#     - configs/
+#         - credentials.py: Stores sensitive information like API keys securely.
+#     - telegram_bot/
+#         - messenger.py: Implements messaging functionality via Telegram.
+#     - sheets/
+#         - google_sheet.py: Manages integration and updates with Google Sheets.
