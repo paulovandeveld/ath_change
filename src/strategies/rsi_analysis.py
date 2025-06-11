@@ -468,11 +468,25 @@ class RSIAnalyzer:
             flag_20bb_Bsup = df['close'].iloc[-2] > sma_20.iloc[-2]  and df['close'].iloc[-2] < upper_20.iloc[-2]
             flag_20bb_inf = df['close'].iloc[-2]  < sma_20.iloc[-2] 
             flag_20bb_Ainf = df['close'].iloc[-2] < lower_20.iloc[-2]
-            flag_50bb_sup = df['close'].iloc[-2]  > sma_50.iloc[-2] 
+            flag_50bb_sup = df['close'].iloc[-2]  > sma_50.iloc[-2]
             flag_50bb_Ainf = df['close'].iloc[-2] < lower_50.iloc[-2]
             flag_dir_mas = sma_50.iloc[-2] > sma_100.iloc[-2] and sma_100.iloc[-2] > sma_200.iloc[-2]
             flag_dir_S_mas = sma_50.iloc[-2] < sma_100.iloc[-2] and sma_100.iloc[-2] < sma_200.iloc[-2]
             diff_ath = (df['close'].iloc[-2] - max_high) / max_high
+
+            # Volume based indicators
+            vol_sma_7 = self.calculate_sma(df['volume'], 7)
+            vol_sma_14 = self.calculate_sma(df['volume'], 14)
+            vol_sma_20 = self.calculate_sma(df['volume'], 20)
+
+            df['Volume_SMA7'] = vol_sma_7
+            df['Volume_SMA14'] = vol_sma_14
+            df['Volume_SMA20'] = vol_sma_20
+
+            for periodo in [7, 14, 20]:
+                df[f'Vol%_{periodo}'] = df['volume'] / df[f'Volume_SMA{periodo}']
+
+            volume_flag = all(df[f'Vol%_{p}'].iloc[-2] > 1 for p in [7, 14, 20])
             
             symbol_data[symbol] = {
                 "RSI": df['RSI'].iloc[-2],
@@ -499,6 +513,10 @@ class RSIAnalyzer:
                 "BB20_BOT": flag_20bb_Ainf,
                 "BB50_SUP": flag_50bb_sup,
                 "BB50_BOT": flag_50bb_Ainf,
+                "Vol%_7": df['Vol%_7'].iloc[-2],
+                "Vol%_14": df['Vol%_14'].iloc[-2],
+                "Vol%_20": df['Vol%_20'].iloc[-2],
+                "VOLUME_FLAG": volume_flag,
                 "Close": df['res'].iloc[-2]
             }
             print(symbol, symbol_data[symbol]['RSI'])
