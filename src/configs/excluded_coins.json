@@ -1,11 +1,38 @@
 {
-    "manual_exclude": ["ousg", "usyc", "$rcge", "gho", "paxg", "qgold", "dai", "usr"],
+	"fut_binance_exclude": ["SRMUSDT", "HNTUSDT", "TOMOUSDT", "CVCUSDT", "BTSUSDT", "SCUSDT", "RAYUSDT", "FTTUSDT", "COCOSUSDT", "DGBUSDT", "BLUEBIRDUSDT", "FOOTBALLUSDT", "CFXUSDT", "STRAXUSDT", "CTKUSDT", "ANTUSDT", "STPTUSDT", "SNTUSDT", "MBLUSDT", "RADUSDT", "CVXUSDT", "IDEXUSDT", "SLPUSDT", "GLMRUSDT", "MDTUSDT",  "AUDIOUSDT", "OCEANUSDT", "AGIXUSDT", "WAVESUSDT", "USDCUSDT", "LOOMUSDT", "XEMUSDT", "BNXUSDT", "AERGOUSDT", "COMBOUSDT" , "LINAUSDT", "BADGERUSDT", "BALUSDT", "NULSUSDT", "SNTUSDT", "TROYUSDT", "VIDTUSDT", "ALPACAUSDT"],
+    "manual_exclude": ["ousg", "usyc", "$rcge", "gho", "paxg", "qgold", "dai", "usr", "ctb", "frax", "kau", "gyd", "eutbl", "buidl", "xaut", "kag", "eurc", "honey", "ustbl", "wfragsol", "sol", "jlp", "buck"],
     "stable_keywords": ["usd"],
-    "wrapped_keywords": ["btc", "eth", "sol", "apt", "The Dogeson", "Based Pepe"],
-	"current_ath" : ["leo", "ftn", "virtual", "tkx", "ai16z", "spx"],
-	"current_ath_lowcap" : ["fmc", "snai", "cookie", "fomo", "spore", "odos", "order"],
+    "wrapped_keywords": ["btc", "eth", "apt", "bnb", "The Dogeson", "Based Pepe", "xrp", "hype", "jlp", "wstusr"],
+	"mexc_exclude" : ["leo", "buck", "jlp", "ftn", "saros", "resolv"],
+	"current_ath" : ["wbt", "syrup"],
+	"current_ath_lowcap" : ["fmc", "giza", "mask", "resolv", "home"],
 	"symbol_corrections": {
-        "ai-rig-complex": "arcsol"
+        "ai-rig-complex": "arcsol",
+		"metaverse": "metavsol",
+		"max-2": "maxsol",
+		"alpha": "alphaofsol",
+		"troll": "trollsol"
     },
-	"update_at" : "01/01/2024 21:00"
+	"binance_mexc_correction": {
+        "1000XUSDT": "XUSDT",
+		"1000BONKUSDT": "BONKUSDT",
+		"1000LUNCUSDT": "LUNCUSDT",
+		"1000CATSUSDT": "CATSUSDT",
+		"1000RATSUSDT": "RATSUSDT",
+		"1000PEPEUSDT": "PEPEUSDT",
+		"1000SHIBUSDT": "SHIBUSDT",
+		"RAYSOLUSDT": "RAYUSDT",
+		"1000SATSUSDT": "SATSUSDT",
+		"1000CHEEMSUSDT": "CHEEMSUSDT",
+		"1000FLOKIUSDT": "FLOKIUSDT",
+		"1000CATUSDT": "CATUSDT",
+		"1000XECUSDT": "XECUSDT",
+		"1000000MOGUSDT": "MOGUSDT"
+    },
+	"update_at" : "02/06/2025 21:01",
+	"deposit_missing" : "50 USDT - 02/06",
+	"vender": {
+		"SYRUPUSDT": "11/06"
+	}
 }
+
