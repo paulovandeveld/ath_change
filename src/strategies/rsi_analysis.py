@@ -107,6 +107,22 @@ class RSIAnalyzer:
     def check_trend_S(self, sma_1, sma_2):
         return sma_1 < sma_2
 
+    def calculate_close_percentage(self, series, window):
+        """Calculate the percentage of prior closes lower than the current close."""
+        result = []
+        for i in range(len(series)):
+            if i < window:
+                past_window = series[:i]
+                current_close = series[i]
+                higher_days = (past_window < current_close).sum()
+                pct = higher_days / window
+            else:
+                past_window = series[i - window:i]
+                current_close = series[i]
+                pct = (past_window < current_close).sum() / window
+            result.append(round(pct, 4))
+        return result
+
     def calc_bb(self, data, period, std_dev, band="upper"):
         sma = data.rolling(window=period).mean()
         std = data.rolling(window=period).std()
@@ -486,6 +502,9 @@ class RSIAnalyzer:
             for periodo in [7, 14, 20]:
                 df[f'Vol%_{periodo}'] = df['volume'] / df[f'Volume_SMA{periodo}']
 
+            for periodo in [30, 90, 150]:
+                df[f'Close%_{periodo}d'] = self.calculate_close_percentage(df['close'], periodo)
+
             volume_flag = all(df[f'Vol%_{p}'].iloc[-2] > 1 for p in [7, 14, 20])
             
             symbol_data[symbol] = {
@@ -517,6 +536,9 @@ class RSIAnalyzer:
                 "Vol%_14": df['Vol%_14'].iloc[-2],
                 "Vol%_20": df['Vol%_20'].iloc[-2],
                 "VOLUME_FLAG": volume_flag,
+                "Close%_30d": df['Close%_30d'].iloc[-2],
+                "Close%_90d": df['Close%_90d'].iloc[-2],
+                "Close%_150d": df['Close%_150d'].iloc[-2],
                 "Close": df['res'].iloc[-2]
             }
             print(symbol, symbol_data[symbol]['RSI'])
