@@ -1,0 +1,21 @@
+sudo -u paulo psql -d db_tasks
+
+sudo -u postgres psql
+
+psql postgres://uchq63ne500i0b:pe129340899a63f9ca95cb432a5fbbaccf9af202c84190f63f4d6c7e828fd8d65@cd1goc44htrmfn.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/db92m7ogtco0gj
+\c db_tasks - conectar a novo banco
+\dt - Listar tabelas
+\d tasks - Lista estrutura da tabela
+
+
+
+🔗 HOST: http://smtr.mov:80
+
+🖥 USUÁRIO: 110034622
+
+🔒 SENHA: k145387y
+
+🗓 EXPIRAÇÃO: 11.Mar.2025 (52 dias)
+
+
+http://110034622:k145387y@smtr.mov:80/get.php?username=110034622&password=k145387y&type=m3u

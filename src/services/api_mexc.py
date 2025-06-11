@@ -85,3 +85,30 @@ class MexcAPI:
             if self.messenger:  # Send Telegram message if messenger is provided
                 self.messenger.send_message(error_msg)
             return response.json()
+
+    def fetch_trades(self):
+        print("Loading trades history on exchange...")
+        url = f"{self.BASE_URL}/myTrades"
+        headers = {"X-MEXC-APIKEY": self.api_key}
+        trades = []
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            raw_trades = response.json()
+
+            # Transformando os dados conforme a estrutura do banco
+            for trade in raw_trades:
+                trades.append({
+                    'symbol': trade['symbol'],
+                    'side': 'BUY' if trade['isBuyer'] else 'SELL',
+                    'quantity': float(trade['qty']),
+                    'price': float(trade['price']),
+                    'quoteQty': float(trade['quoteQty']),
+                    'time': trade['time']
+                })
+            print(trades)
+                
+            self.messenger.send_message(f"Trades database updated successfully")
+        except requests.exceptions.RequestException as e:
+            self.messenger.send_message(f"Trades database update raises error: {e}")
+        return trades

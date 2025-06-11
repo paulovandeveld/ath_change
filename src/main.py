@@ -13,6 +13,8 @@ settings_file = os.path.join(current_dir, "configs/settings.json")
 from src.services.api_coingecko import CoinGeckoAPI
 from src.services.api_mexc import MexcAPI
 from src.services.utils import calculate_precision, format_dataframe, split_message, load_exclusion_lists, load_settings, is_excluded_coin, apply_symbol_corrections
+from src.services.database import DatabaseManager
+from src.strategies.rsi_analysis import RSIAnalyzer
 from src.telegram_bot.messenger import TelegramMessenger
 from src.sheets.google_sheet import GoogleSheetManager
 from src.configs.credentials import Credentials
@@ -25,6 +27,8 @@ def main():
     coingecko = CoinGeckoAPI()
     messenger = TelegramMessenger()
     mexc = MexcAPI(Credentials.MEXC_API_KEY, Credentials.MEXC_API_SECRET, messenger)
+    db_trades = DatabaseManager("mexc_trades.db")
+    rsi_analyzer = RSIAnalyzer(exclusion_file)
     
     #Key da planilha no Google Sheets
     sheet_manager = GoogleSheetManager(Credentials.SPREADSHEET_KEY) 
@@ -89,7 +93,8 @@ def main():
         
     top_10_df = filtered_df.head(10)
     top_5_df = top_10_df.sort_values(by="market_cap_rank").head(5)
-    top_5_df = top_5_df[~top_5_df['symbol'].isin(exclusion_data["current_ath"])].reset_index(drop=True)     
+    top_5_df = top_5_df[~top_5_df['symbol'].isin(exclusion_data["mexc_exclude"])].reset_index(drop=True)     
+    lowcap_df_close = ", ".join([symbol for symbol in exclusion_data["current_ath_lowcap"] if symbol not in lowcap_df['symbol'].tolist()])
     lowcap_df = lowcap_df[~lowcap_df['symbol'].isin(exclusion_data["current_ath_lowcap"])].reset_index(drop=True)
         
     settings = load_settings(settings_file)
@@ -97,19 +102,27 @@ def main():
     
     print("Moedas para abrir na MEXC pelo setup TOP 500: ", top_5_df["symbol"].tolist())
     print("Moedas para abrir na MEXC pelo setup low caps: ", lowcap_df["symbol"].tolist())
-
+    
+    messenger.send_message(f"Moedas lowcap para fechar: {lowcap_df_close}!")
+    
     # Execute trading logic
     print("\nExecuting trading logic...")
     symbols = "; ".join(top_5_df["symbol"].tolist())
     messenger.send_message(f"Symbols: {symbols.upper()}")
     for _, row in top_5_df.iterrows():
+        symbol = row["symbol"]
+        if symbol in exclusion_data["current_ath"]:
+            amount = usd_amount * 0.2
+        else:
+            amount = usd_amount 
+            
         symbol = row["symbol"].upper()
         pair_info = mexc.check_pair_exists(symbol)
         if pair_info and pair_info["exists"]:
             print(f"\nPair {symbol}USDT found. Preparing to place order...")
             open_price = mexc.get_open_price(symbol)
             if open_price > 0:
-                quantity = calculate_precision(usd_amount, open_price, pair_info["baseAssetPrecision"])
+                quantity = calculate_precision(amount, open_price, pair_info["baseAssetPrecision"])
                 mexc.place_limit_order(symbol, open_price, quantity, "BUY")
             else:
                 print(f"Open price for {symbol} could not be found.")
@@ -133,7 +146,39 @@ def main():
                 print(f"Open price for {symbol} could not be found.")
         else:
             print(f"\nPair {symbol}USDT not found on MEXC SPOT market.")
-         
+            
+    
+    # Executar a análise de RSI após a lógica principal
+    print("Running RSI analysis...")
+    rsi_data, symbol_data = rsi_analyzer.run_rsi_analysis()
+
+    #Calculate RSI Rank and add it to symbol_data dict
+    all_data_df = pd.DataFrame(rsi_data)
+    all_data_df['RSI_Rank'] = all_data_df['RSI'].rank(ascending=False, method='dense')
+    all_data_df['RSI_Rank_ASC'] = all_data_df['RSI'].rank(ascending=True, method='dense')
+    for symbol in symbol_data.keys():
+        symbol_data[symbol]['RSI_Rank'] = all_data_df.loc[all_data_df['symbol'] == symbol, 'RSI_Rank'].values[0]
+        symbol_data[symbol]['RSI_Rank_ASC'] = all_data_df.loc[all_data_df['symbol'] == symbol, 'RSI_Rank_ASC'].values[0]
+        
+    print(f"RSI Analysis Completed. {len(rsi_data)} symbols analyzed.")
+    
+    # Opcional: Enviar os resultados para o Telegram
+    messenger.send_message(f"RSI Analysis completed. {len(rsi_data)} symbols analyzed.")   
+
+    #print(symbol_data)
+    listas = rsi_analyzer.processar_symbols(symbol_data)
+    for lista_nome, lista_conteudo in listas.items():
+        print(f"{lista_nome}: {lista_conteudo}")
+    #rsi_analyzer.atualizar_config('/home/paulo/multitradeBot/config.py', listas)
+    rsi_analyzer.gerar_setups(listas)
+    messenger.send_message(f"setups.py lists updated.")   
+    
+    
+    #Trades Histórico
+    #trades = mexc.fetch_trades()
+    #db_trades.save_to_sqlite(trades)
+    #db_trades.create_aggregated_view()
+
 if __name__ == "__main__":
     main()
 

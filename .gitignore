@@ -1,4 +1,5 @@
 src/configs/credentials.py
 
 *.pyc
+*.parquet
 __pycache__/
